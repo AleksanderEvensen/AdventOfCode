@@ -1,26 +1,26 @@
 package main
 
 import (
+	"os"
+	"strconv"
+
 	"ahse.no/aoc/challenges/day1"
 	"ahse.no/aoc/challenges/day2"
 	"ahse.no/aoc/challenges/day3"
-	"ahse.no/aoc/challenges/day4"
-	"ahse.no/aoc/challenges/day5"
-	"ahse.no/aoc/challenges/day6"
 )
 
 func main() {
-	println("Day 1")
-	day1.Solve()	
-	println("\nDay 2")
-	day2.Solve()
-	println("\nDay 3")
-	day3.Solve()
-	println("\nDay 4")
-	day4.Solve()
-	println("\nDay 5")
-	day5.Solve()
-	println("\nDay 6")
-	day6.Solve()
+
+	dayToRun, err := strconv.Atoi(os.Args[len(os.Args)-1])
+
+	if err != nil { dayToRun = -1 }
+
+	if dayToRun == -1 || dayToRun == 1 { day1.Solve() }
+	if dayToRun == -1 || dayToRun == 2 { day2.Solve() }
+	if dayToRun == -1 || dayToRun == 3 { day3.Solve() }
+	// if dayToRun == -1 || dayToRun == 4 { day4.Solve() }
+	// if dayToRun == -1 || dayToRun == 5 { day5.Solve() }
+	// if dayToRun == -1 || dayToRun == 6 { day6.Solve() }
+
 }
 

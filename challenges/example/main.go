@@ -1,10 +1,11 @@
-package day3
+package example
 
 import "ahse.no/aoc/utils"
 
 func Solve() {
-	println("Solving Day 3")
-	lines := utils.ReadAllLines("./challenges/day3/input.txt")
+	println("Solving example")
+
+	lines := utils.ReadAllLines("./challenges/example/input.txt")
 
 	part_1 := 0
 	part_2 := 0

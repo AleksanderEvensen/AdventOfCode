@@ -10,6 +10,7 @@ import (
 )
 
 func Solve() {
+	println("Solving Day 2")
 	lines := utils.ReadAllLines("./challenges/day2/input.txt");
 
 
@@ -59,8 +60,7 @@ func Solve() {
 
 	}
 
-
 	println("Part 1:", gameIdSum)
 	println("Part 2:", cubeSum)
-
+	println()
 }

@@ -8,6 +8,7 @@ import (
 )
 
 func Solve() {
+	println("Solving Day 1")
 	lines := utils.ReadAllLines("./challenges/day1/input.txt");
 	
 
@@ -21,7 +22,7 @@ func Solve() {
 
 	println("Part 1:", partASum);
 	println("Part 2:", partBSum);
-
+	println()
 }
 
 func partANum(line string) int {

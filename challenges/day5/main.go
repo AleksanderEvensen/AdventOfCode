@@ -3,6 +3,7 @@ package day5
 import "ahse.no/aoc/utils"
 
 func Solve() {
+	println("Solving Day 5")
 	lines := utils.ReadAllLines("./challenges/day5/input.txt")
 
 	part_1 := 0
@@ -11,5 +12,6 @@ func Solve() {
 	println(lines)
 	println("Part 1:", part_1)
 	println("Part 2:", part_2)
+	println()
 
 }
