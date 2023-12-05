@@ -8,6 +8,7 @@ import (
 	"ahse.no/aoc/challenges/day2"
 	"ahse.no/aoc/challenges/day3"
 	"ahse.no/aoc/challenges/day4"
+	"ahse.no/aoc/challenges/day5"
 )
 
 func main() {
@@ -30,7 +31,9 @@ func main() {
 	if dayToRun == -1 || dayToRun == 4 {
 		day4.Solve()
 	}
-	// if dayToRun == -1 || dayToRun == 5 { day5.Solve() }
+	if dayToRun == -1 || dayToRun == 5 {
+		day5.Solve()
+	}
 	// if dayToRun == -1 || dayToRun == 6 { day6.Solve() }
 
 }
