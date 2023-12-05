@@ -2,7 +2,6 @@ use crate::challenges::{Challenge, PuzzleAnswer};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
-use std::str::Chars;
 
 pub struct Day3;
 

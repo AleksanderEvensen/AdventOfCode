@@ -9,10 +9,11 @@ fn main() {
         .map_or(-1, |v| v);
 
     let mut challenges: Vec<(Box<dyn Challenge>, &str)> = vec![
-        (Box::new(challenges::day1::Day1), "./src/inputs/day1.txt"),
-        (Box::new(challenges::day2::Day2), "./src/inputs/day2.txt"),
-        (Box::new(challenges::day3::Day3), "./src/inputs/day3.txt"),
-        (Box::new(challenges::day4::Day4), "./src/inputs/day4.txt"),
+        (Box::new(challenges::Day1), "./src/inputs/day1.txt"),
+        (Box::new(challenges::Day2), "./src/inputs/day2.txt"),
+        (Box::new(challenges::Day3), "./src/inputs/day3.txt"),
+        (Box::new(challenges::Day4), "./src/inputs/day4.txt"),
+        (Box::new(challenges::Day5), "./src/inputs/day5.txt"),
     ];
 
     challenges

@@ -1,8 +1,10 @@
 package day5
 
 import (
+	"fmt"
 	"strings"
 	"sync"
+	"time"
 
 	"ahse.no/aoc/utils"
 )
@@ -103,6 +105,7 @@ func Solve() {
 
 	}
 
+	startTime := time.Now()
 	// brute force for the win
 	lowestSeeds := [10]int{}
 	var wg sync.WaitGroup
@@ -138,6 +141,9 @@ func Solve() {
 			part_2 = lowestLoc
 		}
 	}
+
+	executionTime := time.Now().Sub(startTime)
+	fmt.Printf("Took  %v to execute\n", executionTime)
 
 	println("Part 1:", part_1)
 	println("Part 2:", part_2)
