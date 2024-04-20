@@ -1,6 +1,7 @@
 const std = @import("std");
 const day1 = @import("./challenges/day1.zig");
 const day2 = @import("./challenges/day2.zig");
+const day3 = @import("./challenges//day3.zig");
 
 const Challenge = struct {
     inputFile: []const u8,
@@ -11,6 +12,7 @@ pub fn main() !void {
     const challenges = [_]Challenge{
         Challenge{ .inputFile = "./inputs/day1.txt", .solveFn = &day1.solve },
         Challenge{ .inputFile = "./inputs/day2.txt", .solveFn = &day2.solve },
+        Challenge{ .inputFile = "./inputs/day3.test.txt", .solveFn = &day3.solve },
     };
 
     for (challenges, 1..) |challenge, i| {
