@@ -12,6 +12,6 @@ pub fn solve(inputFile: []const u8) !void {
 
     var buffer: [1024]u8 = undefined;
     while (try inputReader.readUntilDelimiterOrEof(&buffer, '\n')) |line| {
-        std.debug.print("line: {}\n", .{line});
+        std.debug.print("line: {s}\n", .{line});
     }
 }
