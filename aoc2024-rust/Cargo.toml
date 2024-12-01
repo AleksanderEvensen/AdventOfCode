@@ -1,0 +1,8 @@
+[package]
+name = "aoc2024-rust"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+parse-display = { version = "0.10.0", features = ["regex"] }
+rayon = "1.10.0"
