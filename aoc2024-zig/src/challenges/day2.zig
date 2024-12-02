@@ -1,10 +1,6 @@
 const std = @import("std");
 
-pub fn solve(input: []const u8) !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
-
+pub fn solve(input: []const u8, allocator: std.mem.Allocator) !void {
     var lines = std.mem.tokenizeAny(u8, input, "\n");
 
     var sum_part1: usize = 0;
