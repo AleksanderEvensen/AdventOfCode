@@ -9,6 +9,7 @@ fn main() {
     let challenges: Vec<(&dyn Fn(String), &'static str)> = vec![
         (&challenges::solve_day1, "./src/inputs/day1.txt"),
         (&challenges::solve_day2, "./src/inputs/day2.txt"),
+        (&challenges::solve_day3, "./src/inputs/day3.txt"),
     ];
 
     for i in 0..challenges.len() {
@@ -19,16 +20,18 @@ fn main() {
         let (func, path) = challenges[i];
 
         println!("\nSolving day{}\n", i + 1);
-        let start = std::time::Instant::now();
         match std::fs::read_to_string(path) {
-            Ok(input) => func(input),
+            Ok(input) => {
+                let start = std::time::Instant::now();
+                func(input);
+                let elapsed = start.elapsed();
+                println!("\nDone solving day{} in {:?}", i + 1, elapsed);
+            },
             Err(err) => {
                 println!("Failed to read input file for day{}", i + 1);
                 println!("    {}", err);
                 continue;
             }
         }
-        let elapsed = start.elapsed();
-        println!("\nDone solving day{} in {:?}", i + 1, elapsed);
     }
 }
