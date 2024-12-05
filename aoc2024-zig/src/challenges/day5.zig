@@ -3,7 +3,7 @@ const util = @import("../util.zig");
 const print = std.debug.print;
 
 pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
-    const orders, const pages = util.splitOnce(input, "\n\n");
+    const orders, const pages = try util.splitOnce(input, "\n\n");
 
     var part_1: u32 = 0;
     var part_2: u32 = 0;
