@@ -39,7 +39,7 @@ pub fn main() !void {
         const file = try std.fs.cwd().openFile(challenge.input, .{ .mode = .read_only });
         defer file.close();
         const file_size = (try file.stat()).size;
-        const contents = try file.readToEndAlloc(alloc, file_size);
+        const contents = try crlf_to_lf(try file.readToEndAlloc(alloc, file_size), alloc);
 
         const start = std.time.microTimestamp();
         try challenge.solveFn(contents, alloc);
@@ -66,4 +66,11 @@ fn formatDurration(nanoseconds: i64) anyerror![]const u8 {
 
     var buffer: [100]u8 = undefined;
     return try std.fmt.bufPrint(&buffer, "{d}{s}", .{ unitValue, unit });
+}
+
+fn crlf_to_lf(contents: []const u8, allocator: std.mem.Allocator) ![]u8 {
+    const size = std.mem.replacementSize(u8, contents, "\r\n", "\n");
+    const buffer = try allocator.alloc(u8, size);
+    _ = std.mem.replace(u8, contents, "\r\n", "\n", buffer);
+    return buffer;
 }
