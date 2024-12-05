@@ -4,6 +4,7 @@ const day1 = @import("./challenges/day1.zig");
 const day2 = @import("./challenges/day2.zig");
 const day3 = @import("./challenges/day3.zig");
 const day4 = @import("./challenges/day4.zig");
+const day5 = @import("./challenges/day5.zig");
 
 const Challenge = struct {
     input: []const u8,
@@ -17,18 +18,24 @@ pub fn main() !void {
     defer arena.deinit();
 
     const challenges = [_]Challenge{
-        // Challenge{ .input = @embedFile("./inputs/day1.txt"), .solveFn = &day1.solve },
-        // Challenge{ .input = @embedFile("./inputs/day2.txt"), .solveFn = &day2.solve },
-        // Challenge{ .input = @embedFile("./inputs/day3.txt"), .solveFn = &day3.solve },
-        Challenge{ .input = @embedFile("./inputs/day4.txt"), .solveFn = &day4.solve },
+        Challenge{ .input = "./src/inputs/day1.txt", .solveFn = &day1.solve },
+        Challenge{ .input = "./src/inputs/day2.txt", .solveFn = &day2.solve },
+        Challenge{ .input = "./src/inputs/day3.txt", .solveFn = &day3.solve },
+        Challenge{ .input = "./src/inputs/day4.txt", .solveFn = &day4.solve },
+        Challenge{ .input = "./src/inputs/day5.txt", .solveFn = &day5.solve },
     };
 
     for (challenges, 1..) |challenge, day| {
         std.debug.print("Running solver for day{}\n", .{day});
         const alloc = arena.allocator();
 
+        const file = try std.fs.cwd().openFile(challenge.input, .{ .mode = .read_only });
+        defer file.close();
+        const file_size = (try file.stat()).size;
+        const contents = try file.readToEndAlloc(alloc, file_size);
+
         const start = std.time.microTimestamp();
-        try challenge.solveFn(challenge.input, alloc);
+        try challenge.solveFn(contents, alloc);
         const timeDiff: i64 = std.time.microTimestamp() - start;
 
         std.debug.print("Done solving day{}, it took {s}\n\n", .{ day, try formatDurration(timeDiff) });
