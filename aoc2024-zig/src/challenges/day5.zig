@@ -1,10 +1,9 @@
 const std = @import("std");
+const util = @import("../util.zig");
 const print = std.debug.print;
 
 pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
-    var sections = std.mem.splitSequence(u8, input, "\n\n");
-    const order_data = sections.next().?;
-    const pages_data = sections.next().?;
+    const orders, const pages = util.splitOnce(input, "\n\n");
 
     var part_1: u32 = 0;
     var part_2: u32 = 0;
@@ -12,30 +11,22 @@ pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
     var map = std.AutoHashMap(u32, std.ArrayList(u32)).init(alloc);
     defer cleanUp(&map); // Clean up the map and all arrays
 
-    var orders_iter = std.mem.splitScalar(u8, order_data, '\n');
-
+    var orders_iter = util.lines(orders);
     while (orders_iter.next()) |order| {
-        var order_iter = std.mem.splitScalar(u8, order, '|');
-        const left = try std.fmt.parseInt(u32, order_iter.next().?, 10);
-        const right = try std.fmt.parseInt(u32, order_iter.next().?, 10);
+        const left, const right = try util.splitOnceNumbers(u32, order, "|");
+
         var val = try map.getOrPut(left);
+
         if (!val.found_existing) {
             val.value_ptr.* = std.ArrayList(u32).init(alloc);
         }
         try val.value_ptr.append(right);
     }
 
-    var pages_iter = std.mem.splitScalar(u8, pages_data, '\n');
-
+    var pages_iter = util.lines(pages);
     while (pages_iter.next()) |page_def| {
-        var page = std.ArrayList(u32).init(alloc);
+        var page = try util.collectNumbersSeperator(u32, page_def, ",", alloc);
         defer page.deinit();
-
-        var page_iter = std.mem.splitScalar(u8, page_def, ',');
-        while (page_iter.next()) |page_num| {
-            const num = try std.fmt.parseInt(u32, page_num, 10);
-            try page.append(num);
-        }
 
         const isInOrder = for (page.items[1..], 1..) |value, i| {
             const prev = page.items[i - 1];
@@ -64,22 +55,12 @@ fn sort_before(ctx: *std.AutoHashMap(u32, std.ArrayList(u32)), left: u32, right:
 
 fn is_before(a: u32, b: u32, map: *std.AutoHashMap(u32, std.ArrayList(u32))) bool {
     if (map.get(a)) |current| {
-        if (array_contains(u32, current.items, b)) {
+        if (util.contains(u32, current.items, b)) {
             return true;
         }
     }
     return false;
 }
-
-fn array_contains(comptime T: type, array: []const T, value: T) bool {
-    for (array) |item| {
-        if (item == value) {
-            return true;
-        }
-    }
-    return false;
-}
-
 fn cleanUp(map: *std.AutoHashMap(u32, std.ArrayList(u32))) void {
     var iter = map.iterator();
     while (iter.next()) |entry| {
