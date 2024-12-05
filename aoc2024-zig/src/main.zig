@@ -1,4 +1,5 @@
 const std = @import("std");
+const assert = std.debug.assert;
 
 const day1 = @import("./challenges/day1.zig");
 const day2 = @import("./challenges/day2.zig");
@@ -13,12 +14,14 @@ const Challenge = struct {
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    // Detect memory leaks
+    defer assert(!gpa.detectLeaks());
+
     const allocator = gpa.allocator();
     var arena = std.heap.ArenaAllocator.init(allocator);
     defer arena.deinit();
 
     const args = try std.process.argsAlloc(arena.allocator());
-
     const specific_day: i32 = if (args.len > 1) (std.fmt.parseInt(i32, args[1], 10) catch -1) else -1;
 
     const challenges = [_]Challenge{
