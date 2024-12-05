@@ -17,6 +17,10 @@ pub fn main() !void {
     var arena = std.heap.ArenaAllocator.init(allocator);
     defer arena.deinit();
 
+    const args = try std.process.argsAlloc(arena.allocator());
+
+    const specific_day: i32 = if (args.len > 1) (std.fmt.parseInt(i32, args[1], 10) catch -1) else -1;
+
     const challenges = [_]Challenge{
         Challenge{ .input = "./src/inputs/day1.txt", .solveFn = &day1.solve },
         Challenge{ .input = "./src/inputs/day2.txt", .solveFn = &day2.solve },
@@ -26,6 +30,9 @@ pub fn main() !void {
     };
 
     for (challenges, 1..) |challenge, day| {
+        if (specific_day != -1 and specific_day != day) {
+            continue;
+        }
         std.debug.print("Running solver for day{}\n", .{day});
         const alloc = arena.allocator();
 
