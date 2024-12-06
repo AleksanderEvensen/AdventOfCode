@@ -56,3 +56,15 @@ pub fn contains(comptime T: type, array: []const T, value: T) bool {
 pub fn parseInt(comptime T: type, string: []const u8) std.fmt.ParseIntError!T {
     return try std.fmt.parseInt(T, string, 10);
 }
+
+pub fn strEql(a: []const u8, b: []const u8) bool {
+    return std.mem.eql(u8, a, b);
+}
+
+pub fn countIter(it: anytype) usize {
+    var count: usize = 0;
+    while (it.next()) |_| {
+        count += 1;
+    }
+    return count;
+}
