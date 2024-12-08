@@ -106,6 +106,7 @@ pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
         if (pos.eql(start_pos)) continue;
 
         var visited = std.AutoHashMap(Position, Direction).init(alloc);
+        defer visited.deinit();
 
         guard_pos = Position{ .x = start_pos.x, .y = start_pos.y };
         current_direction = Direction.Up;
@@ -113,9 +114,6 @@ pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
             const next_pos = guard_pos.Add(current_direction.toPosition());
 
             if (pos.eql(next_pos) or obstacles.contains(next_pos)) {
-                current_direction = current_direction.turnRight();
-            } else {
-                guard_pos = next_pos;
                 const entry = try visited.getOrPut(guard_pos);
                 if (entry.found_existing) {
                     if (entry.value_ptr.* == current_direction) {
@@ -124,6 +122,9 @@ pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
                 } else {
                     entry.value_ptr.* = current_direction;
                 }
+                current_direction = current_direction.turnRight();
+            } else {
+                guard_pos = next_pos;
             }
         } else false;
         if (doesLoop) {

@@ -73,7 +73,7 @@ fn formatDurration(nanoseconds: i64) anyerror![]const u8 {
         else => fNanoseconds / 1_000_000,
     };
 
-    var buffer: [100]u8 = undefined;
+    var buffer: [16]u8 = undefined;
     return try std.fmt.bufPrint(&buffer, "{d}{s}", .{ unitValue, unit });
 }
 
