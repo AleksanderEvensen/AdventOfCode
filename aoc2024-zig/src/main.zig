@@ -1,4 +1,5 @@
 const std = @import("std");
+const util = @import("./util.zig");
 const assert = std.debug.assert;
 
 const day1 = @import("./challenges/day1.zig");
@@ -54,31 +55,12 @@ pub fn main() !void {
         const file_size = (try file.stat()).size;
         const contents = try crlf_to_lf(try file.readToEndAlloc(alloc, file_size), alloc);
 
-        const start = std.time.microTimestamp();
+        const stopWatch = util.StopWatch().init();
         try challenge.solveFn(contents, alloc);
-        const timeDiff: i64 = std.time.microTimestamp() - start;
 
-        std.debug.print("Done solving day{}, it took {s}\n\n", .{ day, try formatDurration(timeDiff) });
+        std.debug.print("Done solving day{}, it took {s}\n\n", .{ day, try stopWatch.lapWithFormat() });
     }
     std.debug.print("All done :)\n", .{});
-}
-
-fn formatDurration(nanoseconds: i64) anyerror![]const u8 {
-    const fNanoseconds: f64 = @floatFromInt(nanoseconds);
-
-    const unit = switch (nanoseconds) {
-        0...1000 => "ns",
-        1001...100_000 => "ms",
-        else => "s",
-    };
-    const unitValue = switch (nanoseconds) {
-        0...1000 => fNanoseconds,
-        1001...100_000 => fNanoseconds / 1_000,
-        else => fNanoseconds / 1_000_000,
-    };
-
-    var buffer: [16]u8 = undefined;
-    return try std.fmt.bufPrint(&buffer, "{d}{s}", .{ unitValue, unit });
 }
 
 fn crlf_to_lf(contents: []const u8, allocator: std.mem.Allocator) ![]u8 {

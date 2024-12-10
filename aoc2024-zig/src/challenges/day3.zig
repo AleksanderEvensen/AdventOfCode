@@ -1,21 +1,23 @@
 const std = @import("std");
+const util = @import("../util.zig");
+
 const print = std.debug.print;
 
+const Instructions = enum {
+    dont,
+    do,
+    mul,
+};
+
 pub fn solve(input: []const u8, _: std.mem.Allocator) !void {
-    var tokens = std.mem.tokenizeScalar(u8, input, '(');
+    var fns = util.split(input, "(");
 
     var sum_part1: isize = 0;
     var sum_part2: isize = 0;
     var disabled = false;
-    var prev = tokens.next().?;
 
-    const Instructions = enum {
-        dont,
-        do,
-        mul,
-    };
-
-    while (tokens.next()) |token| {
+    var prev = fns.next().?;
+    while (fns.next()) |token| {
         defer prev = token;
 
         if (!std.mem.containsAtLeast(u8, token, 1, ")")) {
@@ -31,9 +33,7 @@ pub fn solve(input: []const u8, _: std.mem.Allocator) !void {
         else
             continue;
 
-        var rest = std.mem.splitScalar(u8, token, ')');
-
-        const params = rest.next() orelse continue;
+        const params = util.splitTakeFirst(token, ")") orelse continue;
 
         switch (instr_type) {
             Instructions.dont => {
@@ -46,14 +46,9 @@ pub fn solve(input: []const u8, _: std.mem.Allocator) !void {
             },
             Instructions.mul => {
                 if (params.len > 7) continue;
-                var numbers_iter = std.mem.tokenizeScalar(u8, params, ',');
 
-                const a = numbers_iter.next() orelse continue;
-                const b = numbers_iter.next() orelse continue;
+                const p1, const p2 = util.splitOnceNumbers(isize, params, ",") catch continue;
 
-                const p1 = std.fmt.parseInt(isize, a, 10) catch continue;
-                const p2 = std.fmt.parseInt(isize, b, 10) catch continue;
-                if (p1 * p2 == 793086) print("Found the bastard: {s}({s}\n", .{ prev, token });
                 sum_part1 += p1 * p2;
                 sum_part2 += p1 * p2 * @as(isize, if (disabled) 0 else 1);
             },

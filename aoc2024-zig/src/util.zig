@@ -26,6 +26,11 @@ pub fn splitOnceNumbers(comptime T: type, string: []const u8, sep: []const u8) S
     return .{ parseInt(T, first) catch return error.ParseIntError, parseInt(T, second) catch return error.ParseIntError };
 }
 
+pub fn splitTakeFirst(string: []const u8, sep: []const u8) ?[]const u8 {
+    var it = split(string, sep);
+    return it.next();
+}
+
 pub fn collectLines(string: []const u8, allocator: Allocator) Allocator.Error!std.ArrayList([]const u8) {
     var list = std.ArrayList([]const u8).init(allocator);
     var it = lines(string);
@@ -67,4 +72,48 @@ pub fn countIter(it: anytype) usize {
         count += 1;
     }
     return count;
+}
+
+pub fn StopWatch() type {
+    return struct {
+        start: i64,
+
+        const Self = @This();
+
+        pub fn init() Self {
+            return .{ .start = std.time.microTimestamp() };
+        }
+
+        pub fn restart(self: *Self) void {
+            self.start = std.time.microTimestamp();
+        }
+
+        pub fn lap(self: Self) i64 {
+            return std.time.microTimestamp() - self.start;
+        }
+
+        pub fn lapWithFormat(self: Self) ![]const u8 {
+            const duration = self.lap();
+
+            return try formatDurration(duration);
+        }
+    };
+}
+
+pub fn formatDurration(nanoseconds: i64) anyerror![]const u8 {
+    const fNanoseconds: f64 = @floatFromInt(nanoseconds);
+
+    const unit = switch (nanoseconds) {
+        0...1000 => "ns",
+        1001...100_000 => "ms",
+        else => "s",
+    };
+    const unitValue = switch (nanoseconds) {
+        0...1000 => fNanoseconds,
+        1001...100_000 => fNanoseconds / 1_000,
+        else => fNanoseconds / 1_000_000,
+    };
+
+    var buffer: [16]u8 = undefined;
+    return try std.fmt.bufPrint(&buffer, "{d}{s}", .{ unitValue, unit });
 }

@@ -1,6 +1,6 @@
 const std = @import("std");
 const util = @import("../util.zig");
-const lib = @cImport("lib.h");
+const set = @import("ziglangSet");
 const print = std.debug.print;
 const assert = std.debug.assert;
 
@@ -38,10 +38,10 @@ pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
         nodes.deinit();
     }
 
-    var antiNodes = std.AutoHashMap(Node, u1).init(alloc);
+    var antiNodes = set.Set(Node).init(alloc);
     defer antiNodes.deinit();
 
-    var gridNodes = std.AutoHashMap(Node, u1).init(alloc);
+    var gridNodes = set.Set(Node).init(alloc);
     defer gridNodes.deinit();
 
     const mapHeight: isize = @intCast(lines.items.len);
@@ -72,14 +72,14 @@ pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
                 const delta = a.deltaPos(b);
                 const negated = Node{ .x = -delta.x, .y = -delta.y };
                 if (anti.inBounds(mapWidth, mapHeight)) {
-                    _ = try antiNodes.getOrPut(anti);
-                    _ = try gridNodes.getOrPut(anti);
+                    _ = try antiNodes.add(anti);
+                    _ = try gridNodes.add(anti);
 
                     while (true) {
                         anti = anti.add(delta);
                         if (!anti.inBounds(mapWidth, mapHeight)) break;
 
-                        _ = try gridNodes.getOrPut(anti);
+                        _ = try gridNodes.add(anti);
                     }
 
                     anti = a.antiNode(b);
@@ -88,18 +88,18 @@ pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
                         anti = anti.add(negated);
                         if (!anti.inBounds(mapWidth, mapHeight)) break;
 
-                        _ = try gridNodes.getOrPut(anti);
+                        _ = try gridNodes.add(anti);
                     }
                 }
 
-                _ = try gridNodes.getOrPut(a);
-                _ = try gridNodes.getOrPut(b);
+                _ = try gridNodes.add(a);
+                _ = try gridNodes.add(b);
             }
         }
     }
 
-    var antiIter = antiNodes.keyIterator();
-    var gridIter = gridNodes.keyIterator();
+    var antiIter = antiNodes.iterator();
+    var gridIter = gridNodes.iterator();
     const part_1 = util.countIter(&antiIter);
     const part_2 = util.countIter(&gridIter);
 

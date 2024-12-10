@@ -1,4 +1,6 @@
 const std = @import("std");
+const util = @import("../util.zig");
+
 const print = std.debug.print;
 
 const Point = struct {
@@ -27,42 +29,34 @@ pub fn solve(input: []const u8, allocator: std.mem.Allocator) !void {
         const char = map.get(pos.*) orelse unreachable;
 
         if (char == 'X') {
-            var horiz_buffer = [_]u8{ 'X', undefined, undefined, undefined };
-            var vert_buffer = [_]u8{ 'X', undefined, undefined, undefined };
-            var diagdown_buffer = [_]u8{ 'X', undefined, undefined, undefined };
-            var diagup_buffer = [_]u8{ 'X', undefined, undefined, undefined };
+            var horiz_buffer = [_]u8{undefined} ** 7;
+            var vert_buffer = [_]u8{undefined} ** 7;
+            var diagdown_buffer = [_]u8{undefined} ** 7;
+            var diagup_buffer = [_]u8{undefined} ** 7;
 
-            var cursor: i32 = -3;
-            while (cursor <= 3) : (cursor += 1) {
-                const horiz = map.get(.{ .x = pos.x + cursor, .y = pos.y }) orelse 0;
-                const vert = map.get(.{ .x = pos.x, .y = pos.y + cursor }) orelse 0;
-                const diagdown = map.get(.{ .x = pos.x + cursor, .y = pos.y + cursor }) orelse 0;
-                const diagup = map.get(.{ .x = pos.x + cursor, .y = pos.y - cursor }) orelse 0;
+            for (0..7) |cursor| {
+                var cursor_offset: i32 = @intCast(cursor);
 
-                const buf_pos: usize = @intCast(if (cursor < 0) -cursor else cursor);
+                cursor_offset -= 3;
 
-                horiz_buffer[buf_pos] = horiz;
-                vert_buffer[buf_pos] = vert;
-                diagdown_buffer[buf_pos] = diagdown;
-                diagup_buffer[buf_pos] = diagup;
+                const horiz = map.get(.{ .x = pos.x + cursor_offset, .y = pos.y }) orelse 0;
+                const vert = map.get(.{ .x = pos.x, .y = pos.y + cursor_offset }) orelse 0;
+                const diagdown = map.get(.{ .x = pos.x + cursor_offset, .y = pos.y + cursor_offset }) orelse 0;
+                const diagup = map.get(.{ .x = pos.x + cursor_offset, .y = pos.y - cursor_offset }) orelse 0;
 
-                if (cursor == 0) {
-                    const dirs = [_][4]u8{ horiz_buffer, vert_buffer, diagdown_buffer, diagup_buffer };
-                    for (dirs) |dir| {
-                        if (std.mem.eql(u8, &dir, "XMAS")) {
-                            part_1 += 1;
-                        }
-                    }
-                    horiz_buffer = [_]u8{ 'X', undefined, undefined, undefined };
-                    vert_buffer = [_]u8{ 'X', undefined, undefined, undefined };
-                    diagdown_buffer = [_]u8{ 'X', undefined, undefined, undefined };
-                    diagup_buffer = [_]u8{ 'X', undefined, undefined, undefined };
-                }
+                horiz_buffer[cursor] = horiz;
+                vert_buffer[cursor] = vert;
+                diagdown_buffer[cursor] = diagdown;
+                diagup_buffer[cursor] = diagup;
             }
 
-            const dirs = [_][4]u8{ horiz_buffer, vert_buffer, diagdown_buffer, diagup_buffer };
+            const dirs = [_][7]u8{ horiz_buffer, vert_buffer, diagdown_buffer, diagup_buffer };
             for (dirs) |dir| {
-                if (std.mem.eql(u8, &dir, "XMAS")) {
+                if (std.mem.eql(u8, dir[0..4], "XMAS") or std.mem.eql(u8, dir[0..4], "SAMX")) {
+                    part_1 += 1;
+                }
+
+                if (std.mem.eql(u8, dir[3..7], "XMAS") or std.mem.eql(u8, dir[3..7], "SAMX")) {
                     part_1 += 1;
                 }
             }

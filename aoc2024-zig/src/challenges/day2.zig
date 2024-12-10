@@ -1,69 +1,57 @@
 const std = @import("std");
+const util = @import("../util.zig");
 
-pub fn solve(input: []const u8, allocator: std.mem.Allocator) !void {
-    var lines = std.mem.tokenizeAny(u8, input, "\n");
+const print = std.debug.print;
+
+pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
+    const lines = try util.collectLines(input, alloc);
+    defer lines.deinit();
 
     var sum_part1: usize = 0;
     var sum_part2: usize = 0;
 
-    while (lines.next()) |line| {
-        var values = std.mem.tokenizeScalar(u8, line, ' ');
-
-        var lastValue: isize = std.fmt.parseInt(isize, values.next().?, 10) catch unreachable;
-        const isIncreasing = std.fmt.parseInt(isize, values.peek().?, 10) catch unreachable > lastValue;
-        const isSafe = while (values.next()) |value| {
-            const currentValue: isize = std.fmt.parseInt(isize, value, 10) catch unreachable;
-            const diff = (currentValue - lastValue) * (if (isIncreasing) @as(isize, 1) else -1);
-
-            lastValue = currentValue;
-
-            if (diff < 1 or diff > 3) {
-                break false;
-            }
-        } else true;
-
-        sum_part1 += if (isSafe) 1 else 0;
-    }
-    lines.reset();
-
-    while (lines.next()) |line| {
-        var iter = std.mem.tokenizeScalar(u8, line, ' ');
-
-        var values = std.ArrayList(isize).init(allocator);
+    for (lines.items) |line| {
+        const values = try util.collectNumbersSeperator(isize, line, " ", alloc);
         defer values.deinit();
-        while (iter.next()) |v| {
-            values.append(std.fmt.parseInt(u8, v, 10) catch unreachable) catch unreachable;
+
+        const is_safe = isSafe(values.items);
+
+        if (is_safe) {
+            sum_part1 += 1;
+            sum_part2 += 1;
+            continue;
         }
 
-        const isAnySafe = skipping: for (0..values.items.len) |toSkip| {
-            var levels = std.ArrayList(isize).init(allocator);
-            defer levels.deinit();
+        const isAnySafe = for (0..values.items.len) |to_skip| {
+            var new_set = try alloc.alloc(isize, values.items.len - 1);
+            defer alloc.free(new_set);
 
-            if (toSkip == 0) {
-                try levels.appendSlice(values.items[1..]);
-            } else {
-                try levels.appendSlice(values.items[0..toSkip]);
-                try levels.appendSlice(values.items[(toSkip + 1)..]);
-            }
+            @memcpy(new_set[0..to_skip], values.items[0..to_skip]);
+            @memcpy(new_set[to_skip..], values.items[(to_skip + 1)..]);
 
-            const isIncreasing = levels.items[1] > levels.items[0];
-            const isSafe = for (1..levels.items.len) |i| {
-                const diff: isize = (levels.items[i] - levels.items[i - 1]) * (if (isIncreasing) @as(isize, 1) else -1);
-                if (diff < 1 or diff > 3) {
-                    break false;
-                }
-            } else true;
-
-            if (isSafe) {
-                break :skipping true;
+            if (isSafe(new_set)) {
+                break true;
             }
         } else false;
 
-        if (isAnySafe) {
-            sum_part2 += 1;
+        if (isAnySafe) sum_part2 += 1;
+    }
+
+    print("Part 1: {}\n", .{sum_part1});
+    print("Part 2: {}\n", .{sum_part2});
+}
+
+fn isSafe(values: []isize) bool {
+    const is_increasing = values[1] > values[0];
+
+    for (values[1..], 1..) |value, i| {
+        const last_value = values[i - 1];
+        const diff = (value - last_value) * @as(isize, if (is_increasing) 1 else -1);
+
+        if (diff < 1 or diff > 3) {
+            return false;
         }
     }
 
-    std.debug.print("Part 1: {}\n", .{sum_part1});
-    std.debug.print("Part 2: {}\n", .{sum_part2});
+    return true;
 }

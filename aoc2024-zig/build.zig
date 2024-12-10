@@ -20,6 +20,13 @@ pub fn build(b: *std.Build) void {
     });
 
     exe.root_module.addImport("mibu", mibu_dep.module("mibu"));
+
+    const ziglangSet = b.dependency("ziglangSet", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    exe.root_module.addImport("ziglangSet", ziglangSet.module("ziglangSet"));
+
     b.installArtifact(exe);
 
     run_cmd.step.dependOn(b.getInstallStep());

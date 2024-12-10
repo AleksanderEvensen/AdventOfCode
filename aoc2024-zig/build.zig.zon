@@ -27,6 +27,10 @@
             .url = "https://github.com/xyaman/mibu/archive/refs/heads/main.zip",
             .hash = "12205e93ed17ab3081a9d5289c2665e67873501f069a6210e02f3d8178a0c6e3156a",
         },
+        .ziglangSet = .{
+            .url = "https://github.com/deckarep/ziglang-set/archive/845a2be1861ffcbeb3c9535b1d7895973e2ff535.tar.gz",
+            .hash = "1220e30d1494cccc9f6c327ed7eb41b3b20b1b3e2cc900f2dce0e901193e30fc6442",
+        },
         // See `zig fetch --save <url>` for a command-line interface for adding dependencies.
         //.example = .{
         //    // When updating this field to a new URL, be sure to delete the corresponding

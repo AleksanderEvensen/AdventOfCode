@@ -1,11 +1,8 @@
 const std = @import("std");
 const util = @import("../util.zig");
-const lib = @cImport("lib.h");
-const mibu = @import("mibu");
 
 const print = std.debug.print;
 const assert = std.debug.assert;
-const color = mibu.color;
 
 const Position = struct {
     x: i32,

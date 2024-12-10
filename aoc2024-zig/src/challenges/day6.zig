@@ -1,5 +1,6 @@
 const std = @import("std");
 const util = @import("../util.zig");
+const set = @import("ziglangSet");
 const print = std.debug.print;
 
 const Position = struct {
@@ -62,7 +63,7 @@ pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
     const lines = try util.collectLines(input, alloc);
     defer lines.deinit();
 
-    var obstacles = std.AutoHashMap(Position, bool).init(alloc);
+    var obstacles = set.Set(Position).init(alloc);
     defer obstacles.deinit();
 
     var start_pos = Position{ .x = 0, .y = 0 };
@@ -78,12 +79,12 @@ pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
 
             if (char == '#') {
                 const pos = Position{ .x = @intCast(x), .y = @intCast(y) };
-                try obstacles.put(pos, true);
+                _ = try obstacles.add(pos);
             }
         }
     }
 
-    var unique_pos = std.AutoHashMap(Position, bool).init(alloc);
+    var unique_pos = set.Set(Position).init(alloc);
     defer unique_pos.deinit();
 
     var current_direction = Direction.Up;
@@ -95,14 +96,14 @@ pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
             current_direction = current_direction.turnRight();
         } else {
             guard_pos = next_pos;
-            try unique_pos.put(guard_pos, true);
+            _ = try unique_pos.add(guard_pos);
         }
     }
 
     var part_2: usize = 0;
 
-    var keyIter = unique_pos.keyIterator();
-    while (keyIter.next()) |pos| {
+    var keyIt = unique_pos.iterator();
+    while (keyIt.next()) |pos| {
         if (pos.eql(start_pos)) continue;
 
         var visited = std.AutoHashMap(Position, Direction).init(alloc);
@@ -132,8 +133,8 @@ pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
         }
     }
 
-    keyIter = unique_pos.keyIterator();
-    const part_1: usize = util.countIter(&keyIter);
+    keyIt = unique_pos.iterator();
+    const part_1: usize = util.countIter(&keyIt);
 
     print("Part 1: {}\n", .{part_1});
     print("Part 2: {}\n", .{part_2});
