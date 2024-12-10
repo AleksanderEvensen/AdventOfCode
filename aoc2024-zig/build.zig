@@ -12,9 +12,15 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    b.installArtifact(exe);
-
     const run_cmd = b.addRunArtifact(exe);
+
+    const mibu_dep = b.dependency("mibu", .{
+        .target = target,
+        .optimize = optimize,
+    });
+
+    exe.root_module.addImport("mibu", mibu_dep.module("mibu"));
+    b.installArtifact(exe);
 
     run_cmd.step.dependOn(b.getInstallStep());
 

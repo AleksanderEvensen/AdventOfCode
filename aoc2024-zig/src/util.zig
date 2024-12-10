@@ -46,7 +46,7 @@ pub fn collectNumbersSeperator(comptime T: type, string: []const u8, sep: []cons
 
 pub fn contains(comptime T: type, array: []const T, value: T) bool {
     for (array) |item| {
-        if (item == value) {
+        if (std.meta.eql(item, value)) {
             return true;
         }
     }
