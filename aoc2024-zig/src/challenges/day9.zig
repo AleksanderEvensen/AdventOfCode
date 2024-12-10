@@ -14,8 +14,6 @@ pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
     const lines = try util.collectLines(input, alloc);
     defer lines.deinit();
 
-    // const test_input = "2333133121414131402";
-
     const disk_map = try createDiskMap(input, alloc);
     var block_map = try createBlockMap(input, alloc);
     defer disk_map.deinit();
@@ -37,19 +35,19 @@ pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
         part_1 += i * (value orelse 0);
     }
 
-    var i: usize = 0;
-    while (i < block_map.items.len) : (i += 1) {
-        if (block_map.items[i].free == 0) continue;
-        if (i == block_map.items.len - 1) break;
+    var i: usize = block_map.items.len - 1;
+    while (i > 0) {
+        const block = block_map.items[i];
 
-        if (getLastBlockIndexThatFitsLength(block_map.items[(i + 1)..], block_map.items[i].free)) |block_index| {
-            var to_append = block_map.orderedRemove(block_index + i + 1);
-            block_map.items[block_index + i].free += to_append.count + to_append.free;
+        if (getFirstFreeSpaceThatFitsLength(block_map.items[0..i], block.count)) |block_index| {
+            block_map.items[i - 1].free += block.count + block.free;
 
-            to_append.free = block_map.items[i].free - to_append.count;
-            block_map.items[i].free = 0;
-
-            try block_map.insert(i + 1, to_append);
+            var to_append = block_map.orderedRemove(i);
+            to_append.free = block_map.items[block_index].free - to_append.count;
+            try block_map.insert(block_index + 1, to_append);
+            block_map.items[block_index].free = 0;
+        } else {
+            i -= 1;
         }
     }
 
@@ -57,8 +55,8 @@ pub fn solve(input: []const u8, alloc: std.mem.Allocator) !void {
     var b_i: usize = 0;
     for (block_map.items) |block| {
         for (block.count) |_| {
-            b_i += 1;
             part_2 += b_i * block.value;
+            b_i += 1;
         }
         for (block.free) |_| {
             b_i += 1;
@@ -116,10 +114,10 @@ pub fn getLastFileIndex(disk_map: []?usize) usize {
     return i;
 }
 
-pub fn getLastBlockIndexThatFitsLength(block_map: []Block, length: usize) ?usize {
-    var i = block_map.len - 1;
-    while (i > 0) : (i -= 1) {
-        if (block_map[i].count <= length) {
+pub fn getFirstFreeSpaceThatFitsLength(block_map: []Block, length: usize) ?usize {
+    var i: usize = 0;
+    while (i < block_map.len) : (i += 1) {
+        if (block_map[i].free >= length) {
             return i;
         }
     }
