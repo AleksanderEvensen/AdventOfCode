@@ -31,13 +31,17 @@ pub fn splitTakeFirst(string: []const u8, sep: []const u8) ?[]const u8 {
     return it.next();
 }
 
-pub fn collectLines(string: []const u8, allocator: Allocator) Allocator.Error!std.ArrayList([]const u8) {
+pub fn collectSeperator(string: []const u8, sep: []const u8, allocator: Allocator) Allocator.Error!std.ArrayList([]const u8) {
     var list = std.ArrayList([]const u8).init(allocator);
-    var it = lines(string);
-    while (it.next()) |line| {
-        try list.append(line);
+    var it = split(string, sep);
+    while (it.next()) |section| {
+        try list.append(section);
     }
     return list;
+}
+
+pub fn collectLines(string: []const u8, allocator: Allocator) Allocator.Error!std.ArrayList([]const u8) {
+    return collectSeperator(string, "\n", allocator);
 }
 
 pub fn collectNumbersSeperator(comptime T: type, string: []const u8, sep: []const u8, allocator: Allocator) !std.ArrayList(T) {

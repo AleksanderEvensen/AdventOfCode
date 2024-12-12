@@ -14,18 +14,18 @@ pub fn build(b: *std.Build) void {
 
     const run_cmd = b.addRunArtifact(exe);
 
-    const mibu_dep = b.dependency("mibu", .{
-        .target = target,
-        .optimize = optimize,
-    });
-
-    exe.root_module.addImport("mibu", mibu_dep.module("mibu"));
-
-    const ziglangSet = b.dependency("ziglangSet", .{
-        .target = target,
-        .optimize = optimize,
-    });
-    exe.root_module.addImport("ziglangSet", ziglangSet.module("ziglangSet"));
+    const dependencies = [_][]const u8{
+        "mibu",
+        "ziglangSet",
+        "regex",
+    };
+    for (dependencies) |dep_name| {
+        const dep = b.dependency(dep_name, .{
+            .target = target,
+            .optimize = optimize,
+        });
+        exe.root_module.addImport(dep_name, dep.module(dep_name));
+    }
 
     b.installArtifact(exe);
 
