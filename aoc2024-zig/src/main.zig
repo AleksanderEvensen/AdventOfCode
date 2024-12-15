@@ -14,6 +14,7 @@ const day9 = @import("./challenges/day9.zig");
 const day10 = @import("./challenges/day10.zig");
 const day11 = @import("./challenges/day11.zig");
 const day12 = @import("./challenges/day12.zig");
+const day13 = @import("./challenges/day13.zig");
 
 const Challenge = struct {
     input: []const u8,
@@ -45,6 +46,7 @@ pub fn main() !void {
         Challenge{ .input = "./src/inputs/day10.txt", .solveFn = &day10.solve },
         Challenge{ .input = "./src/inputs/day11.txt", .solveFn = &day11.solve },
         Challenge{ .input = "./src/inputs/day12.txt", .solveFn = &day12.solve },
+        Challenge{ .input = "./src/inputs/day13.txt", .solveFn = &day13.solve },
     };
 
     for (challenges, 1..) |challenge, day| {

@@ -66,6 +66,10 @@ pub fn parseInt(comptime T: type, string: []const u8) std.fmt.ParseIntError!T {
     return try std.fmt.parseInt(T, string, 10);
 }
 
+pub fn parseFloat(comptime T: type, string: []const u8) std.fmt.ParseFloatError!T {
+    return try std.fmt.parseFloat(T, string);
+}
+
 pub fn strEql(a: []const u8, b: []const u8) bool {
     return std.mem.eql(u8, a, b);
 }
